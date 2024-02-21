@@ -16,9 +16,6 @@ const int NAME_COUNT = 10;
 const string NAMES[NAME_COUNT] = {"Dominykas", "Lukas", "Matas", "Benas", "Augustas", "Martynas", "Jonas", "Ignas", "Emilis", "Adomas"};
 const string SURNAMES[NAME_COUNT] = {"Kazlauskas", "Petrauskas", "Jankauskas", "Butkus", "Paulauskas", "Vasiliauskas", "Baranauskas", "Urbonas", "Navickas", "Ramanauskas"};
 
-string generate_surname();
-string generate_name();
-
 struct Student {
     string name, last_name;
     int hw_res[ARR_SIZE];
@@ -27,6 +24,8 @@ struct Student {
     float final_res = 0, final_hw = 0;
 };
 
+string generate_surname();
+string generate_name();
 int generate_mark();
 void readData(Student stud[], int& student_count, bool use_median, bool gen_marks, bool gen_names);
 float average(int res[], int count);
@@ -39,13 +38,13 @@ bool valid_alphabet(string input);
 int main() {
     while(true) {
         Student students[ARR_SIZE];
-        bool ivesta = false;
+        bool entered = false;
         bool generate_marks = false;
         bool generate_names = false;
         bool use_median;
         int menu_choice, student_count = 0;
 
-        while (!ivesta) {
+        while (!entered) {
             cout
                     << "\n----- Pagrindinis meniu -----\n1 - vesti duomenis ranka;\n2 - generuoti pazymius;\n3 - generuoti visus duomenis;\n4 - baigti darba;\n\nIvesti pasirinkima:";
             if (!(cin >> menu_choice)) {
@@ -54,12 +53,12 @@ int main() {
                 if (menu_choice < 1 or menu_choice > 4) {
                     cout << "Bloga ivestis, galima ivesti tik nurodytus pasirinkimus" << endl << endl;
                 } else if (menu_choice == 1){
-                    ivesta = true;
+                    entered = true;
                 } else if (menu_choice == 2) {
-                    ivesta = true;
+                    entered = true;
                     generate_marks = true;
                 } else if (menu_choice == 3) {
-                    ivesta = true;
+                    entered = true;
                     generate_marks = true;
                     generate_names = true;
                 } else if (menu_choice == 4) {
@@ -70,14 +69,14 @@ int main() {
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         };
 
-        ivesta = false;
-        while (!ivesta) {
+        entered = false;
+        while (!entered) {
             cout << "Naudoti vidurki ar mediana? (0 - vidurkis, 1 - mediana):";
             if (cin >> use_median) {
                 if (use_median != 0 && use_median != 1) {
                     cout << "Bloga ivestis, galima ivesti tik 0 arba 1." << endl << endl;
                 } else {
-                    ivesta = true;
+                    entered = true;
                 }
             } else {
                 cout << "Bloga ivestis, bandykite dar karta" << endl << endl;
@@ -131,12 +130,12 @@ bool valid_alphabet(string input) {
 void readData(Student stud[], int& student_count, bool use_median, bool gen_marks, bool gen_names) {
     bool do_continue = false;
     bool do_continue_inner = false;
-    bool ivesta, ivesta_inner;
+    bool entered, entered_inner;
     string response;
     Student stud_var;
     int hw, mark;
     do{
-        ivesta = false;
+        entered = false;
         if (gen_names) {
             string name = generate_name();
             string surname = generate_surname();
@@ -145,49 +144,49 @@ void readData(Student stud[], int& student_count, bool use_median, bool gen_mark
             stud_var.name = name;
             stud_var.last_name = surname;
         }else {
-            while (!ivesta) {
+            while (!entered) {
                 cout << "Vardas (maks. 20 simboliu):";
                 getline(cin, stud_var.name);
                 if (valid_alphabet(stud_var.name)) {
-                    ivesta = true;
+                    entered = true;
                 };
             };
 
-            ivesta = false;
-            while (!ivesta) {
+            entered = false;
+            while (!entered) {
                 cout << "Pavarde (maks. 20 simboliu):";
                 getline(cin, stud_var.last_name);
                 if (valid_alphabet(stud_var.last_name)) {
-                    ivesta = true;
+                    entered = true;
                 };
             };
         };
         do {
             if (stud_var.hw_count < ARR_SIZE) {
-                ivesta = false;
+                entered = false;
                 cout << "Ivesti namu darbu rezultata? (y - taip, n - ne):";
                 cin >> response;
-                while (!ivesta) {
+                while (!entered) {
                     if (response == "n") {
                         do_continue_inner = false;
-                        ivesta = true;
+                        entered = true;
                     } else if (response == "y") {
                         if (gen_marks) {
                             mark = generate_mark();
                             stud_var.hw_res[stud_var.hw_count] = mark;
                             cout << "Sugeneruotas pazymys: " << mark << endl;
-                            ivesta = true;
+                            entered = true;
                             do_continue_inner = true;
                         } else {
-                            ivesta = true;
+                            entered = true;
                             do_continue_inner = true;
-                            ivesta_inner = false;
-                            while (!ivesta_inner) {
+                            entered_inner = false;
+                            while (!entered_inner) {
                                 cout << "Namu darbo nr. " << stud_var.hw_count + 1 << " rezultatas:";
                                 if (cin >> hw) {
                                     if (valid_mark(hw)) {
                                         stud_var.hw_res[stud_var.hw_count] = hw;
-                                        ivesta_inner = true;
+                                        entered_inner = true;
                                     };
                                 } else {
                                     cout << "Bloga ivestis, galima ivesti tik sveikuosius skaicius." << endl << endl;
@@ -199,27 +198,27 @@ void readData(Student stud[], int& student_count, bool use_median, bool gen_mark
                         stud_var.hw_count++;
                     } else {
                         cout << "Bloga ivestis, bandykite dar karta." << endl << endl;
-                        ivesta = true;
+                        entered = true;
                         do_continue_inner = true;
                     };
                 };
             } else {
                 do_continue_inner = false;
-                cout << "Ivestas maksimalus skaicius pazymiu (" << ARR_SIZE << ")" << endl;
+                cout << "entereds maksimalus skaicius pazymiu (" << ARR_SIZE << ")" << endl;
             };
         }while(do_continue_inner);
 
-        ivesta = false;
+        entered = false;
         if (gen_marks) {
             mark = generate_mark();
             stud_var.exam_res = mark;
             cout << "Sugeneruotas egzamino rezultatas: " << mark << endl << endl;
         } else {
-            while (!ivesta) {
+            while (!entered) {
                 cout << "Egzamino rezultatas:";
                 if (cin >> stud_var.exam_res) {
                     if (valid_mark(stud_var.exam_res)) {
-                        ivesta = true;
+                        entered = true;
                     };
                 } else {
                     cout << "Bloga ivestis, galima ivesti tik sveikuosius skaicius." << endl << endl;
@@ -240,25 +239,25 @@ void readData(Student stud[], int& student_count, bool use_median, bool gen_mark
         student_count++;
         cout << endl;
 
-        ivesta = false;
+        entered = false;
         cout << endl;
         if (student_count < ARR_SIZE) {
-            while (!ivesta) {
+            while (!entered) {
                 cout << "Ivesti dar vieno studento duomenis? (y - taip, n - ne):";
                 cin >> response;
                 if (response == "n") {
                     do_continue = false;
-                    ivesta = true;
+                    entered = true;
                 } else if (response == "y") {
                     do_continue = true;
-                    ivesta = true;
+                    entered = true;
                 } else {
                     cout << "Bloga ivestis, bandykite dar karta." << endl << endl;
-                    ivesta = false;
+                    entered = false;
                 };
             };
         } else {
-            cout << "Ivestas maksimalus skaicius studentu (" << ARR_SIZE << ")" << endl;
+            cout << "entereds maksimalus skaicius studentu (" << ARR_SIZE << ")" << endl;
             do_continue = false;
         };
         cin.ignore (std::numeric_limits<std::streamsize>::max(), '\n');

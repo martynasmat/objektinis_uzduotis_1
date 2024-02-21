@@ -37,31 +37,35 @@ bool valid_alphabet(string input);
 int main() {
     while(true) {
         vector<Studentas> students;
-        bool ivesta = false;
+        bool entered = false;
         bool generate_marks = false;
         bool generate_names = false;
+        bool read_from_file = false;
         bool use_median;
         int menu_choice;
 
-        while (!ivesta) {
+        while (!entered) {
             cout
-                    << "\n----- Pagrindinis meniu -----\n1 - vesti duomenis ranka;\n2 - generuoti pazymius;\n3 - generuoti visus duomenis;\n4 - baigti darba;\n\nIvesti pasirinkima:";
+                    << "\n----- Pagrindinis meniu -----\n1 - vesti duomenis ranka;\n2 - skaityti duomenis is failo;\n3 - generuoti pazymius;\n4 - generuoti visus duomenis;\n5 - baigti darba;\n\nIvesti pasirinkima:";
             if (!(cin >> menu_choice)) {
                 cout << "Bloga ivestis, bandykite dar karta" << endl << endl;
             } else {
                 if (menu_choice < 1 or menu_choice > 4) {
                     cout << "Bloga ivestis, galima ivesti tik nurodytus pasirinkimus" << endl << endl;
                 } else if (menu_choice == 1){
-                    ivesta = true;
+                    entered = true;
                 } else if (menu_choice == 2) {
-                    ivesta = true;
+                    entered = true;
+                    read_from_file = true;
+                }else if (menu_choice == 3) {
+                    entered = true;
                     generate_marks = true;
-                } else if (menu_choice == 3) {
-                    ivesta = true;
+                } else if (menu_choice == 4) {
+                    entered = true;
                     generate_marks = true;
                     generate_names = true;
                     cout << generate_names << endl;
-                } else if (menu_choice == 4) {
+                } else if (menu_choice == 5) {
                     return 0;
                 };
             };
@@ -69,14 +73,14 @@ int main() {
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         };
 
-        ivesta = false;
-        while (!ivesta) {
+        entered = false;
+        while (!entered) {
             cout << "Naudoti vidurki ar mediana? (0 - vidurkis, 1 - mediana):";
             if (cin >> use_median) {
                 if (use_median != 0 && use_median != 1) {
                     cout << "Bloga ivestis, galima ivesti tik 0 arba 1." << endl << endl;
                 } else {
-                    ivesta = true;
+                    entered = true;
                 }
             } else {
                 cout << "Bloga ivestis, bandykite dar karta" << endl << endl;
@@ -130,12 +134,12 @@ bool valid_alphabet(string input) {
 void readData(vector <Studentas> &stud, bool use_median, bool gen_marks, bool gen_names) {
     bool do_continue = false;
     bool do_continue_inner = false;
-    bool ivesta, ivesta_inner;
+    bool entered, entered_inner;
     string response;
     Studentas stud_var;
     int hw, mark;
     do{
-        ivesta = false;
+        entered = false;
         if (gen_names) {
             string name = generate_name();
             string surname = generate_surname();
@@ -144,49 +148,49 @@ void readData(vector <Studentas> &stud, bool use_median, bool gen_marks, bool ge
             stud_var.name = name;
             stud_var.last_name = surname;
         }else {
-            while (!ivesta) {
+            while (!entered) {
                 cout << "Vardas (maks. 20 simboliu):";
                 getline(cin, stud_var.name);
                 if (valid_alphabet(stud_var.name)) {
-                    ivesta = true;
+                    entered = true;
                 };
             };
 
-            ivesta = false;
-            while (!ivesta) {
+            entered = false;
+            while (!entered) {
                 cout << "Pavarde (maks. 20 simboliu):";
                 getline(cin, stud_var.last_name);
                 if (valid_alphabet(stud_var.last_name)) {
-                    ivesta = true;
+                    entered = true;
                 };
             };
         };
 
         do {
-            ivesta = false;
+            entered = false;
             cout << "Ivesti namu darbu rezultata? (y - taip, n - ne):";
             cin >> response;
-            while (!ivesta) {
+            while (!entered) {
                 if (response == "n") {
                     do_continue_inner = false;
-                    ivesta = true;
+                    entered = true;
                 } else if (response == "y") {
                     if (gen_marks) {
                         mark = generate_mark();
                         stud_var.hw_res.push_back(mark);
                         cout << "Sugeneruotas pazymys: " << mark << endl;
-                        ivesta = true;
+                        entered = true;
                         do_continue_inner = true;
                     } else {
-                        ivesta = true;
+                        entered = true;
                         do_continue_inner = true;
-                        ivesta_inner = false;
-                        while (!ivesta_inner) {
+                        entered_inner = false;
+                        while (!entered_inner) {
                             cout << "Namu darbo nr. " << stud_var.hw_res.size() + 1 << " rezultatas:";
                             if (cin >> hw) {
                                 if (valid_mark(hw)) {
                                     stud_var.hw_res.push_back(hw);
-                                    ivesta_inner = true;
+                                    entered_inner = true;
                                 };
                             } else {
                                 cout <<  "Bloga ivestis, galima ivesti tik sveikuosius skaicius." << endl << endl;
@@ -197,23 +201,23 @@ void readData(vector <Studentas> &stud, bool use_median, bool gen_marks, bool ge
                     };
                 } else {
                     cout << "Bloga ivestis, bandykite dar karta." << endl << endl;
-                    ivesta = true;
+                    entered = true;
                     do_continue_inner = true;
                 };
             };
         }while(do_continue_inner);
 
-        ivesta = false;
+        entered = false;
         if (gen_marks) {
             mark = generate_mark();
             stud_var.exam_res = mark;
             cout << "Sugeneruotas egzamino rezultatas: " << mark << endl << endl;
         } else {
-            while (!ivesta) {
+            while (!entered) {
                 cout << "Egzamino rezultatas:";
                 if (cin >> stud_var.exam_res) {
                     if (valid_mark(stud_var.exam_res)) {
-                        ivesta = true;
+                        entered = true;
                     };
                 } else {
                     cout << "Bloga ivestis, galima ivesti tik sveikuosius skaicius." << endl << endl;
@@ -233,20 +237,20 @@ void readData(vector <Studentas> &stud, bool use_median, bool gen_marks, bool ge
         stud.push_back(stud_var);
         cout << endl;
 
-        ivesta = false;
+        entered = false;
         cout << endl;
-        while(!ivesta) {
+        while(!entered) {
             cout << "Ivesti dar vieno studento duomenis? (y - taip, n - ne):";
             cin >> response;
             if (response == "n") {
                 do_continue = false;
-                ivesta = true;
+                entered = true;
             }else if (response == "y") {
                 do_continue = true;
-                ivesta = true;
+                entered = true;
             }else {
                 cout << "Bloga ivestis, bandykite dar karta." << endl << endl;
-                ivesta = false;
+                entered = false;
             };
         };
         cin.ignore (std::numeric_limits<std::streamsize>::max(), '\n');
