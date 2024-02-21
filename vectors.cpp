@@ -26,7 +26,7 @@ const vector <string> SURNAMES = {"Kazlauskas", "Petrauskas", "Jankauskas", "But
 string generate_surname();
 string generate_name();
 int generate_mark();
-void readData(vector <Studentas> &stud, bool use_median, bool gen_marks, bool gen_names);
+void read_data_from_console(vector <Studentas> &stud, bool use_median, bool gen_marks, bool gen_names);
 float average(vector <int> &res);
 float median(vector <int> &res);
 float final(float hw, int exam);
@@ -88,7 +88,7 @@ int main() {
             cin.clear();
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         };
-        readData(students, use_median, generate_marks, generate_names);
+        read_data_from_console(students, use_median, generate_marks, generate_names);
         printData(students, students.size(), use_median);
     };
 };
@@ -131,7 +131,7 @@ bool valid_alphabet(string input) {
     };
 };
 
-void readData(vector <Studentas> &stud, bool use_median, bool gen_marks, bool gen_names) {
+void read_data_from_console(vector <Studentas> &stud, bool use_median, bool gen_marks, bool gen_names) {
     bool do_continue = false;
     bool do_continue_inner = false;
     bool entered, entered_inner;
