@@ -14,7 +14,7 @@ struct Student {
     string name, last_name;
     vector <int> hw_res;
     int exam_res = 0;
-    float final_res = 0, final_hw = 0;
+    float final_res_avg = 0, final_res_med = 0, final_hw_avg = 0, final_hw_med = 0;
 };
 
 const int NAME_MAX_SYMBOLS = 20;
@@ -33,7 +33,7 @@ void read_data_from_console(vector <Student> &stud, bool use_median, bool gen_ma
 float average(vector <int> &res);
 float median(vector <int> &res);
 float final(float hw, int exam);
-void printData(vector <Student> &stud, int num, bool use_median);
+void print_data_choice(vector <Student> &stud, int num, bool use_median);
 bool valid_mark(int input);
 bool valid_alphabet(string input);
 
@@ -96,7 +96,7 @@ int main() {
         }else {
             read_data_from_console(students, use_median, generate_marks, generate_names);
         };
-        printData(students, students.size(), use_median);
+        print_data_choice(students, students.size(), use_median);
     };
 };
 
@@ -153,7 +153,6 @@ void read_data_from_file(string file_name, vector <Student> &stud, bool use_medi
         }else {
             Student student;
             file >> student.name >> student.last_name;
-            cout << student.name << endl;
             do {
                 if(file.peek() == 32) {
                     file >> student.exam_res;
@@ -164,7 +163,8 @@ void read_data_from_file(string file_name, vector <Student> &stud, bool use_medi
                     student.hw_res.push_back(mark);
                 };
             }while (file.peek() == 10);
-            student.final_res = final(student.final_hw, student.exam_res);
+            student.final_res_avg = final(student.final_hw_avg, student.exam_res);
+            student.final_res_med = final(student.final_hw_med, student.exam_res);
             stud.push_back(student);
         };
     };
@@ -270,13 +270,11 @@ void read_data_from_console(vector <Student> &stud, bool use_median, bool gen_ma
             };
         };
 
-        if(use_median) {
-            stud_var.final_hw = median(stud_var.hw_res);
-        }else {
-            stud_var.final_hw = average(stud_var.hw_res);
-        };
+        stud_var.final_hw_med = median(stud_var.hw_res);
+        stud_var.final_hw_avg = average(stud_var.hw_res);
 
-        stud_var.final_res = final(stud_var.final_hw, stud_var.exam_res);
+        stud_var.final_res_avg = final(stud_var.final_hw_avg, stud_var.exam_res);
+        stud_var.final_res_med = final(stud_var.final_hw_med, stud_var.exam_res);
         stud.push_back(stud_var);
         cout << endl;
 
@@ -339,7 +337,23 @@ float final(float hw, int exam) {
     return 0.4 * hw + 0.6 * exam;
 };
 
-void printData(vector <Student> &stud, int num, bool use_median) {
+void print_data(vector <Student> &stud, int num) {
+    // Different output for average and median
+    int width = 20;
+    cout << left << setw(width) << "Pavarde";
+    cout << left << setw(width) << "Vardas";
+    cout << left << setw(width) << "Galutinis (med.)" << endl;
+    cout << left << setw(width) << "Galutinis (vid.)" << endl;
+    cout << "------------------------------------------------------------" << endl;
+    for(int i = 0; i < num; i++) {
+        cout << left << setw(width) << stud[i].last_name;
+        cout << left << setw(width) << stud[i].name;
+        cout << left << setw(width) << fixed << setprecision(2) << stud[i].final_res_med << endl;
+        cout << left << setw(width) << fixed << setprecision(2) << stud[i].final_res_avg << endl;
+    };
+};
+
+void print_data_choice(vector <Student> &stud, int num, bool use_median) {
     // Different output for average and median
     string galutinis = use_median ? "Galutinis (med.)" : "Galutinis (vid.)";
     int width = 20;
@@ -351,6 +365,10 @@ void printData(vector <Student> &stud, int num, bool use_median) {
     for(int i = 0; i < num; i++) {
         cout << left << setw(width) << stud[i].last_name;
         cout << left << setw(width) << stud[i].name;
-        cout << left << setw(width) << fixed << setprecision(2) << stud[i].final_res << endl;
+        if(use_median) {
+            cout << left << setw(width) << fixed << setprecision(2) << stud[i].final_res_med << endl;
+        }else {
+            cout << left << setw(width) << fixed << setprecision(2) << stud[i].final_res_avg << endl;
+        };
     };
 };
