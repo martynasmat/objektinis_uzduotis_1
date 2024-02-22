@@ -5,10 +5,12 @@
 #include <cmath>
 #include <algorithm>
 #include <cctype>
+#include <fstream>
+#include <chrono>
 
 using namespace std;
 
-struct Studentas {
+struct Student {
     string name, last_name;
     vector <int> hw_res;
     int exam_res = 0;
@@ -23,20 +25,21 @@ const int NAME_COUNT = 10;
 const vector <string> NAMES = {"Dominykas", "Lukas", "Matas", "Benas", "Augustas", "Martynas", "Jonas", "Ignas", "Emilis", "Adomas"};
 const vector <string> SURNAMES = {"Kazlauskas", "Petrauskas", "Jankauskas", "Butkus", "Paulauskas", "Vasiliauskas", "Baranauskas", "Urbonas", "Navickas", "Ramanauskas"};
 
+void read_data_from_file(string file_name, vector <Student> &stud, bool use_median);
 string generate_surname();
 string generate_name();
 int generate_mark();
-void read_data_from_console(vector <Studentas> &stud, bool use_median, bool gen_marks, bool gen_names);
+void read_data_from_console(vector <Student> &stud, bool use_median, bool gen_marks, bool gen_names);
 float average(vector <int> &res);
 float median(vector <int> &res);
 float final(float hw, int exam);
-void printData(vector <Studentas> &stud, int num, bool use_median);
+void printData(vector <Student> &stud, int num, bool use_median);
 bool valid_mark(int input);
 bool valid_alphabet(string input);
 
 int main() {
     while(true) {
-        vector<Studentas> students;
+        vector<Student> students;
         bool entered = false;
         bool generate_marks = false;
         bool generate_names = false;
@@ -50,7 +53,7 @@ int main() {
             if (!(cin >> menu_choice)) {
                 cout << "Bloga ivestis, bandykite dar karta" << endl << endl;
             } else {
-                if (menu_choice < 1 or menu_choice > 4) {
+                if (menu_choice < 1 or menu_choice > 5) {
                     cout << "Bloga ivestis, galima ivesti tik nurodytus pasirinkimus" << endl << endl;
                 } else if (menu_choice == 1){
                     entered = true;
@@ -64,7 +67,6 @@ int main() {
                     entered = true;
                     generate_marks = true;
                     generate_names = true;
-                    cout << generate_names << endl;
                 } else if (menu_choice == 5) {
                     return 0;
                 };
@@ -88,7 +90,12 @@ int main() {
             cin.clear();
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         };
-        read_data_from_console(students, use_median, generate_marks, generate_names);
+
+        if (read_from_file) {
+            read_data_from_file("kursiokai.txt", students, use_median);
+        }else {
+            read_data_from_console(students, use_median, generate_marks, generate_names);
+        };
         printData(students, students.size(), use_median);
     };
 };
@@ -131,12 +138,48 @@ bool valid_alphabet(string input) {
     };
 };
 
-void read_data_from_console(vector <Studentas> &stud, bool use_median, bool gen_marks, bool gen_names) {
+void read_data_from_file(string file_name, vector <Student> &stud, bool use_median) {
+    stringstream buffer;
+    int mark;
+    bool first_line = true;
+    // Read file
+    auto start = std::chrono::high_resolution_clock::now(); auto st = start;
+    ifstream file(file_name);
+    while(!file.eof()) {
+        if(first_line) {
+            string line;
+            getline(file, line);
+            first_line = false;
+        }else {
+            Student student;
+            file >> student.name >> student.last_name;
+            cout << student.name << endl;
+            do {
+                if(file.peek() == 32) {
+                    file >> student.exam_res;
+                    file.clear();
+                    file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                }else {
+                    file >> mark;
+                    student.hw_res.push_back(mark);
+                };
+            }while (file.peek() == 10);
+            student.final_res = final(student.final_hw, student.exam_res);
+            stud.push_back(student);
+        };
+    };
+    file.close();
+
+    std::chrono::duration<double> diff = std::chrono::high_resolution_clock::now() - start;
+    cout << "Failo nuskaitymas uztruko " << diff.count() << "s" << endl;
+};
+
+void read_data_from_console(vector <Student> &stud, bool use_median, bool gen_marks, bool gen_names) {
     bool do_continue = false;
     bool do_continue_inner = false;
     bool entered, entered_inner;
     string response;
-    Studentas stud_var;
+    Student stud_var;
     int hw, mark;
     do{
         entered = false;
@@ -296,7 +339,7 @@ float final(float hw, int exam) {
     return 0.4 * hw + 0.6 * exam;
 };
 
-void printData(vector <Studentas> &stud, int num, bool use_median) {
+void printData(vector <Student> &stud, int num, bool use_median) {
     // Different output for average and median
     string galutinis = use_median ? "Galutinis (med.)" : "Galutinis (vid.)";
     int width = 20;
