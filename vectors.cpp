@@ -104,7 +104,7 @@ int main() {
         };
 
         if (read_from_file) {
-            read_data_from_file("studentai1000000.txt", students, use_median);
+            read_data_from_file("studentai100000.txt", students, use_median);
         }else {
             read_data_from_console(students, use_median, generate_marks, generate_names);
         };
