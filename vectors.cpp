@@ -242,16 +242,15 @@ void read_data_from_file(string file_name, vector <Student> &stud, bool use_medi
         }else {
             Student student;
             file >> student.name >> student.last_name;
-            do {
-                if(file.peek() == 32) {
-                    file >> student.exam_res;
-                    file.clear();
-                    file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                }else {
-                    file >> mark;
-                    student.hw_res.push_back(mark);
-                };
-            }while (file.peek() == 10);
+            while (file.peek() == 32) {
+                file >> mark;
+                student.hw_res.push_back(mark);
+            };
+
+            student.exam_res = student.hw_res.back();
+            student.hw_res.pop_back();
+            student.final_hw_avg = average(student.hw_res);
+            student.final_hw_med = median(student.hw_res);
             student.final_res_avg = final(student.final_hw_avg, student.exam_res);
             student.final_res_med = final(student.final_hw_med, student.exam_res);
             stud.push_back(student);
